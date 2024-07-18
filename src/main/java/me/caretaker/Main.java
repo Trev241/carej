@@ -16,6 +16,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        try {
+            Files.createDirectories(Paths.get("data/patients"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         this.primaryStage = primaryStage;
         this.patients = new ArrayList<>();
         this.appointments = new ArrayList<>();
@@ -99,23 +107,25 @@ public class Main extends Application {
     }
 
     private void loadPatientsFromFile() {
-        File file = new File("patients.txt");
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Name: ")) {
-                    String name = line.substring("Name: ".length()).trim();
-                    int age = Integer.parseInt(reader.readLine().substring("Age: ".length()).trim());
-                    String medicalHistory = reader.readLine().substring("Medical History: ".length()).trim();
-                    String contactInfo = reader.readLine().substring("Contact Information: ".length()).trim();
-                    reader.readLine();
-                    Patient patient = new Patient(name, age, medicalHistory, contactInfo);
-                    patients.add(patient);
-                }
-            }
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load patients: " + e.getMessage());
-        }
+//        File file = new File("patients.txt");
+//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                if (line.startsWith("Name: ")) {
+//                    String name = line.substring("Name: ".length()).trim();
+//                    int age = Integer.parseInt(reader.readLine().substring("Age: ".length()).trim());
+//                    String medicalHistory = reader.readLine().substring("Medical History: ".length()).trim();
+//                    String contactInfo = reader.readLine().substring("Contact Information: ".length()).trim();
+//                    reader.readLine();
+//                    Patient patient = new Patient(name, age, medicalHistory, contactInfo);
+//                    patients.add(patient);
+//                }
+//            }
+//        } catch (IOException e) {
+//            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load patients: " + e.getMessage());
+//        }
+
+        patients = Patient.loadAll();
     }
 
     private void loadAppointmentsFromFile() {
@@ -165,7 +175,7 @@ public class Main extends Application {
                 patientInfo.append("Name: ").append(patient.getName()).append("\n");
                 patientInfo.append("Age: ").append(patient.getAge()).append("\n");
                 patientInfo.append("Medical History: ").append(patient.getMedicalHistory()).append("\n");
-                patientInfo.append("Contact Information: ").append(patient.getContactInfo()).append("\n\n");
+                patientInfo.append("Contact Information: ").append(patient.getPhone()).append("\n\n");
             }
             showScrollableAlert("Patient Records", patientInfo.toString());
         });
@@ -229,10 +239,24 @@ public class Main extends Application {
             String medicalHistory = medicalHistoryTextField.getText();
             String contactInfo = contactTextField.getText();
 
-            Patient patient = new Patient(name, Integer.parseInt(age), medicalHistory, contactInfo);
-            patients.add(patient);
+            // TODO: Replace dummy attributes
 
-            savePatientsToFile();
+            Patient patient = null;
+            try {
+                patient = new Patient(
+                        name,
+                        Integer.parseInt(age),
+                        Gender.M,
+                        new Address("5600 Yonge Street", "North York", "M2N5S2"),
+                        medicalHistory,
+                        contactInfo);
+                patients.add(patient);
+                patient.save();
+            } catch (IllegalAddressException | IOException ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+            }
+
+//            savePatientsToFile();
             showAlert(Alert.AlertType.INFORMATION, "Patient Added", "Patient record added successfully.");
 
             // After adding patient and saving data, show the dash board
@@ -333,19 +357,21 @@ public class Main extends Application {
     }
 
     private void savePatientsToFile() {
-        File file = new File("patients.txt");
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            for (Patient patient : patients) {
-                writer.println("Name: " + patient.getName());
-                writer.println("Age: " + patient.getAge());
-                writer.println("Medical History: " + patient.getMedicalHistory());
-                writer.println("Contact Information: " + patient.getContactInfo());
-                writer.println();
-            }
-            showAlert(Alert.AlertType.INFORMATION, "Patients Saved", "Patient records saved successfully.");
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to save patients: " + e.getMessage());
-        }
+//        File file = new File("patients.txt");
+//        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+//            for (Patient patient : patients) {
+//                writer.println("Name: " + patient.getName());
+//                writer.println("Age: " + patient.getAge());
+//                writer.println("Medical History: " + patient.getMedicalHistory());
+//                writer.println("Contact Information: " + patient.getPhone());
+//                writer.println();
+//            }
+//            showAlert(Alert.AlertType.INFORMATION, "Patients Saved", "Patient records saved successfully.");
+//        } catch (IOException e) {
+//            showAlert(Alert.AlertType.ERROR, "Error", "Failed to save patients: " + e.getMessage());
+//        }
+
+
     }
 
 
@@ -365,22 +391,24 @@ public class Main extends Application {
 
     private void readPatientsFromFile() {
         patients.clear(); // Clear the existing list of patients
-        File file = new File("patients.txt");
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Name: ")) {
-                    String name = line.substring(6);
-                    int age = Integer.parseInt(reader.readLine().substring(5));
-                    String medicalHistory = reader.readLine().substring(17);
-                    String contactInfo = reader.readLine().substring(21);
-                    patients.add(new Patient(name, age, medicalHistory, contactInfo));
-                    reader.readLine();
-                }
-            }
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to read patients: " + e.getMessage());
-        }
+//        File file = new File("patients.txt");
+//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                if (line.startsWith("Name: ")) {
+//                    String name = line.substring(6);
+//                    int age = Integer.parseInt(reader.readLine().substring(5));
+//                    String medicalHistory = reader.readLine().substring(17);
+//                    String contactInfo = reader.readLine().substring(21);
+//                    patients.add(new Patient(name, age, medicalHistory, contactInfo));
+//                    reader.readLine();
+//                }
+//            }
+//        } catch (IOException e) {
+//            showAlert(Alert.AlertType.ERROR, "Error", "Failed to read patients: " + e.getMessage());
+//        }
+
+        patients = Patient.loadAll();
     }
 
 

@@ -1,0 +1,39 @@
+package me.caretaker;
+
+public class Address {
+    public final String street;
+    public final String city;
+    public final String postalCode;
+
+    public Address() {
+        this.street = null;
+        this.city = null;
+        this.postalCode = null;
+    }
+
+    public Address(String street, String city, String postalCode) throws IllegalAddressException {
+        // Initializing street
+        this.street = street;
+
+        if (postalCode != null && postalCode.length() != 6)
+            throw new IllegalAddressException("Postal code does not meet the required length");
+
+        postalCode = postalCode.toUpperCase();
+
+        // Initializing postal code
+        for (int i = 0; i < postalCode.length(); i++) {
+            char c = postalCode.charAt(i);
+            if ((i % 2 == 0 && Character.isDigit(c)) || (i % 2 == 1 && Character.isLetter(c)))
+                throw new IllegalAddressException("Postal code does not comply with format A1A 1A1 - " + postalCode);
+        }
+
+        this.postalCode = postalCode;
+
+        // Initializing city
+        for (int i = 0; i < city.length(); i++)
+            if (Character.isDigit(city.charAt(i)))
+                throw new IllegalAddressException("City cannot contain digits");
+
+        this.city = city;
+    }
+}
