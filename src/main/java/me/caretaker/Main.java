@@ -252,7 +252,7 @@ public class Main extends Application {
                         contactInfo);
                 patients.add(patient);
                 patient.save();
-            } catch (IllegalAddressException | IOException ex) {
+            } catch (IllegalArgumentException | IOException ex) {
                 showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
             }
 

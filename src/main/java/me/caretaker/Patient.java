@@ -1,7 +1,6 @@
 package me.caretaker;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -9,10 +8,12 @@ import java.util.List;
 
 public class Patient implements Serializable {
     private long id;
-    private String name;
     private int age;
+
     private Gender gender;
     private Address address;
+
+    private String name;
     private String medicalHistory;
     private String phone;
     private String notes;
