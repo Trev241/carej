@@ -14,6 +14,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import me.caretaker.models.Address;
+import me.caretaker.models.Appointment;
+import me.caretaker.models.Gender;
+import me.caretaker.models.Patient;
 
 import java.io.*;
 import java.nio.file.Files;

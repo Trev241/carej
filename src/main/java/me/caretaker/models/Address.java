@@ -1,4 +1,4 @@
-package me.caretaker;
+package me.caretaker.models;
 
 public class Address {
     public final String street;

@@ -1,4 +1,4 @@
-package me.caretaker;
+package me.caretaker.models;
 
 import com.google.gson.Gson;
 
