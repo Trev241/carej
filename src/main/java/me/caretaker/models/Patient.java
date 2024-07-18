@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Patient implements Serializable {
@@ -12,6 +13,7 @@ public class Patient implements Serializable {
 
     private Gender gender;
     private Address address;
+    private Date dob;
 
     private String name;
     private String medicalHistory;
@@ -19,11 +21,21 @@ public class Patient implements Serializable {
     private String notes;
 
     public Patient() {
+        this.id = System.currentTimeMillis();
     }
 
-    public Patient(String name, int age, Gender gender, Address address, String medicalHistory, String phone) {
+    public Patient(
+            String name,
+            int age,
+            Date dob,
+            Gender gender,
+            Address address,
+            String medicalHistory,
+            String phone
+    ) {
         this.name = name;
         this.age = age;
+        this.dob = dob;
         this.gender = gender;
         this.address = address;
         this.medicalHistory = medicalHistory;
@@ -89,6 +101,10 @@ public class Patient implements Serializable {
 		return name;
 	}
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
 	public int getAge() {
 		return age;
 	}
@@ -101,11 +117,23 @@ public class Patient implements Serializable {
 		return phone;
 	}
 
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public Address getAddress() {
         return address;
     }
 
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
     public Gender getGender() {
         return gender;
+    }
+
+    public Date getDob() {
+        return dob;
     }
 }

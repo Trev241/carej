@@ -18,11 +18,13 @@ import me.caretaker.models.Address;
 import me.caretaker.models.Appointment;
 import me.caretaker.models.Gender;
 import me.caretaker.models.Patient;
+import me.caretaker.views.PatientView;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Main extends Application {
@@ -30,6 +32,9 @@ public class Main extends Application {
     private Stage primaryStage;
     private List<Patient> patients;
     private List<Appointment> appointments;
+
+    // Views
+    private PatientView patientView;
 
     @Override
     public void start(Stage primaryStage) {
@@ -43,6 +48,8 @@ public class Main extends Application {
         this.patients = new ArrayList<>();
         this.appointments = new ArrayList<>();
         primaryStage.setTitle("Healthcare Application");
+
+        patientView = new PatientView();
 
         // Load patient data from file
         loadPatientsFromFile();
@@ -173,15 +180,18 @@ public class Main extends Application {
         Button viewPatientRecordsDetailsButton = new Button("View Patient Records");
         viewPatientRecordsDetailsButton.setOnAction(e -> {
 
-            readPatientsFromFile();
-            StringBuilder patientInfo = new StringBuilder();
-            for (Patient patient : patients) {
-                patientInfo.append("Name: ").append(patient.getName()).append("\n");
-                patientInfo.append("Age: ").append(patient.getAge()).append("\n");
-                patientInfo.append("Medical History: ").append(patient.getMedicalHistory()).append("\n");
-                patientInfo.append("Contact Information: ").append(patient.getPhone()).append("\n\n");
-            }
-            showScrollableAlert("Patient Records", patientInfo.toString());
+//            readPatientsFromFile();
+//            StringBuilder patientInfo = new StringBuilder();
+//            for (Patient patient : patients) {
+//                patientInfo.append("Name: ").append(patient.getName()).append("\n");
+//                patientInfo.append("Age: ").append(patient.getAge()).append("\n");
+//                patientInfo.append("Medical History: ").append(patient.getMedicalHistory()).append("\n");
+//                patientInfo.append("Contact Information: ").append(patient.getPhone()).append("\n\n");
+//            }
+//            showScrollableAlert("Patient Records", patientInfo.toString());
+
+            patientView.update(patients.getFirst());
+            primaryStage.setScene(patientView.getScene());
         });
 
         Button viewScheduledAppointmentDetailsButton = new Button("View Scheduled Appointments");
@@ -250,6 +260,7 @@ public class Main extends Application {
                 patient = new Patient(
                         name,
                         Integer.parseInt(age),
+                        new Date(),
                         Gender.M,
                         new Address("5600 Yonge Street", "North York", "M2N5S2"),
                         medicalHistory,
