@@ -27,7 +27,7 @@ public class Address {
             }
         }
         this.postalCode = postalCode;
-
+        //comment
         // Initializing city
         if (city != null) {
             for (int i = 0; i < city.length(); i++)
