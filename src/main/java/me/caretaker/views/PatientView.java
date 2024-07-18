@@ -1,7 +1,5 @@
 package me.caretaker.views;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,18 +9,21 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import me.caretaker.models.Patient;
 
 import java.io.IOException;
 
 public class PatientView {
     private final Scene scene;
+    private Scene oldScene;
+
+    private Stage stage;
     private Patient patient;
 
     private final TextField fieldId;
     private final TextField fieldName;
     private final TextField fieldPhone;
-
 
     public PatientView() {
         VBox root = new VBox();
@@ -30,7 +31,10 @@ public class PatientView {
         GridPane gridDetails = new GridPane();
 
         Button buttonSave = new Button("Save");
+        Button buttonBack = new Button("Cancel");
+
         boxActions.getChildren().add(buttonSave);
+        boxActions.getChildren().add(buttonBack);
         boxActions.setAlignment(Pos.CENTER_RIGHT);
 
         root.getChildren().add(gridDetails);
@@ -64,7 +68,11 @@ public class PatientView {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+            this.stage.setScene(oldScene);
         });
+
+        buttonBack.setOnAction(actionEvent -> this.stage.setScene(oldScene));
     }
 
     public void update(Patient patient) {
@@ -73,6 +81,12 @@ public class PatientView {
         fieldId.setText(Long.toString(patient.getId()));
         fieldName.setText(patient.getName());
         fieldPhone.setText(patient.getPhone());
+    }
+
+    public void show(Stage stage) {
+        oldScene = stage.getScene();
+        this.stage = stage;
+        this.stage.setScene(scene);
     }
 
     public Scene getScene() {

@@ -172,7 +172,11 @@ public class Main extends Application {
         Label appointmentSummaryLabel = new Label("Upcoming Appointments: " + appointments.size());
 
         Button viewPatientRecordsButton = new Button("Add Patient");
-        viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
+        viewPatientRecordsButton.setOnAction(event -> {
+            patientView.update(new Patient());
+            patientView.show(primaryStage);
+        });
+//        viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
 
         Button scheduleAppointmentButton = new Button("Schedule Appointment");
         scheduleAppointmentButton.setOnAction(e -> showAppointments());
@@ -191,7 +195,7 @@ public class Main extends Application {
 //            showScrollableAlert("Patient Records", patientInfo.toString());
 
             patientView.update(patients.getFirst());
-            primaryStage.setScene(patientView.getScene());
+            patientView.show(primaryStage);
         });
 
         Button viewScheduledAppointmentDetailsButton = new Button("View Scheduled Appointments");
