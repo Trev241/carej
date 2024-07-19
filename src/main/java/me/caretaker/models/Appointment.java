@@ -1,43 +1,70 @@
 package me.caretaker.models;
 
-import java.io.Serializable;
+import com.google.gson.Gson;
 
-public class Appointment implements Serializable {
-    private String patientName;
-    private String date;
-    private String time;
-    private String reason;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 
-    public Appointment(String patientName, String date, String time, String reason) {
-        this.patientName = patientName;
+public class Appointment {
+    private long patient_id;
+    private long id;
+    private AppointmentType reason;
+    private Date date;
+
+    // Constructors, getters, and setters
+    public Appointment() {
+        this.id=System.currentTimeMillis();
+    }
+
+    public Appointment(long patient_id, AppointmentType reason, Date date) {
+        this.patient_id=patient_id;
+        this.reason = reason;
         this.date = date;
-        this.time = time;
+        this.id= System.currentTimeMillis();
+    }
+
+    public long getPatientID() {
+        return patient_id;
+    }
+
+    public void setPatientID(long patient_id) {
+        this.patient_id=patient_id;
+    }
+    public long getID(){
+        return  id;
+    }
+
+    public AppointmentType getReason() {
+        return reason;
+    }
+
+    public void setReason(AppointmentType reason) {
         this.reason = reason;
     }
 
-    public String getPatientName() {
-		return patientName;
-	}
+    public Date getDate() {
+        return date;
+    }
 
-	public String getDate() {
-		return date;
-	}
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
-	public String getTime() {
-		return time;
-	}
+    // Save method to save appointment details to a JSON file
+    public void save() throws IOException {
+        String filename = "data/appointments/" + id + ".json";
+        try (FileWriter writer = new FileWriter(filename)) {
+            new Gson().toJson(this, writer);
+        }
+    }
 
-	public String getReason() {
-		return reason;
-	}
-
-    @Override
-    public String toString() {
-        return "Appointment{" +
-                "patientName='" + patientName + '\'' +
-                ", date='" + date + '\'' +
-                ", time='" + time + '\'' +
-                ", reason='" + reason + '\'' +
-                '}';
+    // Load method to load appointment details from a JSON file
+    public static Appointment load(long id) throws IOException {
+        String filename = "data/appointments/" + id + ".json";
+        try (FileReader reader = new FileReader(filename)) {
+            return new Gson().fromJson(reader, Appointment.class);
+        }
     }
 }

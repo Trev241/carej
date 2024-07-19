@@ -18,6 +18,7 @@ import me.caretaker.models.Address;
 import me.caretaker.models.Appointment;
 import me.caretaker.models.Gender;
 import me.caretaker.models.Patient;
+import me.caretaker.views.AppointmentView;
 import me.caretaker.views.PatientView;
 
 import java.io.*;
@@ -35,11 +36,13 @@ public class Main extends Application {
 
     // Views
     private PatientView patientView;
+    private  AppointmentView appointmentView;
 
     @Override
     public void start(Stage primaryStage) {
         try {
             Files.createDirectories(Paths.get("data/patients"));
+            Files.createDirectories(Paths.get("data/appointments"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,12 +53,13 @@ public class Main extends Application {
         primaryStage.setTitle("Healthcare Application");
 
         patientView = new PatientView();
+        appointmentView = new AppointmentView();
 
         // Load patient data from file
         loadPatientsFromFile();
 
         // Load appointments data from file
-        loadAppointmentsFromFile();
+        //loadAppointmentsFromFile();
 
         // Main Menu UI
         VBox mainMenuVBox = new VBox();
@@ -139,25 +143,25 @@ public class Main extends Application {
         patients = Patient.loadAll();
     }
 
-    private void loadAppointmentsFromFile() {
-        File file = new File("appointments.txt");
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Patient Name: ")) {
-                    String patientName = line.substring("Patient Name: ".length()).trim();
-                    String date = reader.readLine().substring("Date: ".length()).trim();
-                    String time = reader.readLine().substring("Time: ".length()).trim();
-                    String reason = reader.readLine().substring("Reason for Visit: ".length()).trim();
-                    reader.readLine();
-                    Appointment appointment = new Appointment(patientName, date, time, reason);
-                    appointments.add(appointment);
-                }
-            }
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load appointments: " + e.getMessage());
-        }
-    }
+//    private void loadAppointmentsFromFile() {
+//        File file = new File("appointments.txt");
+//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                if (line.startsWith("Patient Name: ")) {
+//                    String patientName = line.substring("Patient Name: ".length()).trim();
+//                    String date = reader.readLine().substring("Date: ".length()).trim();
+//                    String time = reader.readLine().substring("Time: ".length()).trim();
+//                    String reason = reader.readLine().substring("Reason for Visit: ".length()).trim();
+//                    reader.readLine();
+//                    Appointment appointment = new Appointment(patientName, date, time, reason);
+//                    appointments.add(appointment);
+//                }
+//            }
+//        } catch (IOException e) {
+//            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load appointments: " + e.getMessage());
+//        }
+//    }
 
     private void showDashboard() {
         VBox dashboardVBox = new VBox();
@@ -176,10 +180,13 @@ public class Main extends Application {
             patientView.update(new Patient());
             patientView.show(primaryStage);
         });
-//        viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
+       viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
 
         Button scheduleAppointmentButton = new Button("Schedule Appointment");
-        scheduleAppointmentButton.setOnAction(e -> showAppointments());
+        scheduleAppointmentButton.setOnAction(e ->{
+
+           appointmentView.show(primaryStage);
+        } );
 
         Button viewPatientRecordsDetailsButton = new Button("View Patient Records");
         viewPatientRecordsDetailsButton.setOnAction(e -> {
@@ -202,12 +209,12 @@ public class Main extends Application {
         viewScheduledAppointmentDetailsButton.setOnAction(e -> {
             readAppointmentsFromFile();
             StringBuilder appointmentsInfo = new StringBuilder();
-            for (Appointment appointment : appointments) {
-                appointmentsInfo.append("Patient Name: ").append(appointment.getPatientName()).append("\n");
-                appointmentsInfo.append("Date: ").append(appointment.getDate()).append("\n");
-                appointmentsInfo.append("Time: ").append(appointment.getTime()).append("\n");
-                appointmentsInfo.append("Reason for Visit: ").append(appointment.getReason()).append("\n\n");
-            }
+//            for (Appointment appointment : appointments) {
+//                appointmentsInfo.append("Patient Name: ").append(appointment.getPatientName()).append("\n");
+//                appointmentsInfo.append("Date: ").append(appointment.getDate()).append("\n");
+//                appointmentsInfo.append("Time: ").append(appointment.getTime()).append("\n");
+//                appointmentsInfo.append("Reason for Visit: ").append(appointment.getReason()).append("\n\n");
+//            }
             showScrollableAlert("Scheduled Appointments", appointmentsInfo.toString());
         });
 
@@ -289,55 +296,55 @@ public class Main extends Application {
     }
 
 
-    private void showAppointments() {
-        GridPane appointmentFormGrid = new GridPane();
-        appointmentFormGrid.setAlignment(Pos.CENTER);
-        appointmentFormGrid.setHgap(10);
-        appointmentFormGrid.setVgap(10);
-        appointmentFormGrid.setPadding(new Insets(25, 25, 25, 25));
-
-        TextField patientNameTextField = new TextField();
-        patientNameTextField.setPromptText("Patient Name");
-        appointmentFormGrid.add(new Label("Patient Name:"), 0, 0);
-        appointmentFormGrid.add(patientNameTextField, 1, 0);
-
-        TextField dateTextField = new TextField();
-        dateTextField.setPromptText("Date");
-        appointmentFormGrid.add(new Label("Date:"), 0, 1);
-        appointmentFormGrid.add(dateTextField, 1, 1);
-
-        TextField timeTextField = new TextField();
-        timeTextField.setPromptText("Time");
-        appointmentFormGrid.add(new Label("Time:"), 0, 2);
-        appointmentFormGrid.add(timeTextField, 1, 2);
-
-        TextField reasonTextField = new TextField();
-        reasonTextField.setPromptText("Reason for Visit");
-        appointmentFormGrid.add(new Label("Reason for Visit:"), 0, 3);
-        appointmentFormGrid.add(reasonTextField, 1, 3);
-
-        Button scheduleAppointmentButton = new Button("Schedule Appointment");
-        scheduleAppointmentButton.setOnAction(e -> {
-            String patientName = patientNameTextField.getText();
-            String date = dateTextField.getText();
-            String time = timeTextField.getText();
-            String reason = reasonTextField.getText();
-
-            Appointment appointment = new Appointment(patientName, date, time, reason);
-            appointments.add(appointment);
-
-            saveAppointmentToFile(appointment);
-            showAlert(Alert.AlertType.INFORMATION, "Appointment Scheduled", "Appointment scheduled successfully.");
-
-            // After scheduling appointment and saving data, show the dash board
-            showDashboard();
-        });
-        appointmentFormGrid.add(scheduleAppointmentButton, 1, 4);
-
-        Scene appointmentFormScene = new Scene(appointmentFormGrid, 400, 300);
-        primaryStage.setScene(appointmentFormScene);
-        primaryStage.show();
-    }
+//    private void showAppointments() {
+//        GridPane appointmentFormGrid = new GridPane();
+//        appointmentFormGrid.setAlignment(Pos.CENTER);
+//        appointmentFormGrid.setHgap(10);
+//        appointmentFormGrid.setVgap(10);
+//        appointmentFormGrid.setPadding(new Insets(25, 25, 25, 25));
+//
+//        TextField patientNameTextField = new TextField();
+//        patientNameTextField.setPromptText("Patient Name");
+//        appointmentFormGrid.add(new Label("Patient Name:"), 0, 0);
+//        appointmentFormGrid.add(patientNameTextField, 1, 0);
+//
+//        TextField dateTextField = new TextField();
+//        dateTextField.setPromptText("Date");
+//        appointmentFormGrid.add(new Label("Date:"), 0, 1);
+//        appointmentFormGrid.add(dateTextField, 1, 1);
+//
+//        TextField timeTextField = new TextField();
+//        timeTextField.setPromptText("Time");
+//        appointmentFormGrid.add(new Label("Time:"), 0, 2);
+//        appointmentFormGrid.add(timeTextField, 1, 2);
+//
+//        TextField reasonTextField = new TextField();
+//        reasonTextField.setPromptText("Reason for Visit");
+//        appointmentFormGrid.add(new Label("Reason for Visit:"), 0, 3);
+//        appointmentFormGrid.add(reasonTextField, 1, 3);
+//
+//        Button scheduleAppointmentButton = new Button("Schedule Appointment");
+//        scheduleAppointmentButton.setOnAction(e -> {
+//            String patientName = patientNameTextField.getText();
+//            String date = dateTextField.getText();
+//            String time = timeTextField.getText();
+//            String reason = reasonTextField.getText();
+//
+//            Appointment appointment = new Appointment(patientName, date, time, reason);
+//            appointments.add(appointment);
+//
+//            saveAppointmentToFile(appointment);
+//            showAlert(Alert.AlertType.INFORMATION, "Appointment Scheduled", "Appointment scheduled successfully.");
+//
+//            // After scheduling appointment and saving data, show the dash board
+//            showDashboard();
+//        });
+//        appointmentFormGrid.add(scheduleAppointmentButton, 1, 4);
+//
+//        Scene appointmentFormScene = new Scene(appointmentFormGrid, 400, 300);
+//        primaryStage.setScene(appointmentFormScene);
+//        primaryStage.show();
+//    }
 
 
     private boolean isValidCredentials(String username, String password) {
@@ -397,9 +404,9 @@ public class Main extends Application {
     private void saveAppointmentToFile(Appointment appointment) {
         File file = new File("appointments.txt");
         try (PrintWriter writer = new PrintWriter(new FileWriter(file, true))) {
-            writer.println("Patient Name: " + appointment.getPatientName());
+            //writer.println("Patient Name: " + appointment.getPatientName());
             writer.println("Date: " + appointment.getDate());
-            writer.println("Time: " + appointment.getTime());
+            //writer.println("Time: " + appointment.getTime());
             writer.println("Reason for Visit: " + appointment.getReason());
             writer.println();
             showAlert(Alert.AlertType.INFORMATION, "Appointments Saved", "Appointment records saved successfully.");
@@ -442,7 +449,7 @@ public class Main extends Application {
                     String date = reader.readLine().substring(6);
                     String time = reader.readLine().substring(6);
                     String reason = reader.readLine().substring(18);
-                    appointments.add(new Appointment(patientName, date, time, reason));
+                    //appointments.add(new Appointment(patientName, date, time, reason));
                     reader.readLine();
                 }
             }
