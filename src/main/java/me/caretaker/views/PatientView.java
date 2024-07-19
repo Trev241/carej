@@ -6,13 +6,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import me.caretaker.models.Address;
+import me.caretaker.models.Appointment;
 import me.caretaker.models.Patient;
 
 import java.io.IOException;
+import java.util.Date;
 
 public class PatientView {
     private final Scene scene;
@@ -24,44 +25,86 @@ public class PatientView {
     private final TextField fieldId;
     private final TextField fieldName;
     private final TextField fieldPhone;
+    private final TextField fieldStreet;
+    private final TextField fieldCity;
+    private final TextField fieldPostalCode;
 
     public PatientView() {
         VBox root = new VBox();
         HBox boxActions = new HBox();
+        HBox boxActionsLeft = new HBox();
+        HBox boxActionsRight = new HBox();
         GridPane gridDetails = new GridPane();
 
         Button buttonSave = new Button("Save");
         Button buttonBack = new Button("Cancel");
+        Button buttonBook = new Button("Schedule Appointment");
 
-        boxActions.getChildren().add(buttonSave);
-        boxActions.getChildren().add(buttonBack);
-        boxActions.setAlignment(Pos.CENTER_RIGHT);
+        boxActions.getChildren().add(boxActionsLeft);
+        boxActions.getChildren().add(boxActionsRight);
+        boxActions.setPadding(new Insets(15));
+        boxActions.setSpacing(20);
+        HBox.setHgrow(boxActionsRight, Priority.ALWAYS);
+
+        boxActionsRight.getChildren().add(buttonBack);
+        boxActionsRight.getChildren().add(buttonSave);
+        boxActionsRight.setSpacing(5);
+        boxActionsRight.setAlignment(Pos.CENTER_RIGHT);
+
+        boxActionsLeft.getChildren().add(buttonBook);
+        boxActionsLeft.setAlignment(Pos.CENTER_LEFT);
 
         root.getChildren().add(gridDetails);
         root.getChildren().add(boxActions);
 
-        gridDetails.add(new Label("ID"), 0, 0);
         gridDetails.setPadding(new Insets(15));
         gridDetails.setHgap(10);
         gridDetails.setVgap(10);
 
+        Label labelPersonal = new Label("Personal");
+        labelPersonal.setStyle("-fx-font-weight: bold; -fx-font-size: 18px");
+        gridDetails.add(labelPersonal, 0, 0);
+
+        gridDetails.add(new Label("ID"), 0, 1);
         fieldId = new TextField();
         fieldId.setEditable(false);
-        gridDetails.add(fieldId, 1, 0);
+        fieldId.setDisable(true);
+        gridDetails.add(fieldId, 1, 1);
 
-        gridDetails.add(new Label("Name"), 0, 1);
+        gridDetails.add(new Label("Name"), 0, 2);
         fieldName = new TextField();
-        gridDetails.add(fieldName, 1, 1);
+        gridDetails.add(fieldName, 1, 2);
 
-        gridDetails.add(new Label("Phone"), 0, 2);
+        gridDetails.add(new Label("Phone"), 0, 3);
         fieldPhone = new TextField();
-        gridDetails.add(fieldPhone, 1, 2);
+        gridDetails.add(fieldPhone, 1, 3);
+
+        Label labelAddress = new Label("Address");
+        labelAddress.setStyle("-fx-font-weight: bold; -fx-font-size: 18px");
+        gridDetails.add(labelAddress, 0, 4);
+
+        gridDetails.add(new Label("Street"), 0, 5);
+        fieldStreet = new TextField();
+        gridDetails.add(fieldStreet, 1, 5);
+
+        gridDetails.add(new Label("City"), 0, 6);
+        fieldCity = new TextField();
+        gridDetails.add(fieldCity, 1, 6);
+
+        gridDetails.add(new Label("Postal Code"), 0, 7);
+        fieldPostalCode = new TextField();
+        gridDetails.add(fieldPostalCode, 1, 7);
 
         scene = new Scene(root);
 
         buttonSave.setOnAction(actionEvent -> {
             patient.setName(fieldName.getText());
             patient.setPhone(fieldPhone.getText());
+            patient.setAddress(new Address(
+                    fieldStreet.getText(),
+                    fieldCity.getText(),
+                    fieldPostalCode.getText()
+            ));
 
             try {
                 patient.save();
@@ -73,6 +116,21 @@ public class PatientView {
         });
 
         buttonBack.setOnAction(actionEvent -> this.stage.setScene(oldScene));
+
+        buttonBook.setOnAction(actionEvent -> {
+            AppointmentView appointmentView = new AppointmentView();
+            Appointment appointment = new Appointment();
+            appointment.setPatientID(this.patient.getId());
+            appointment.setDate(new Date());
+
+            try {
+                appointmentView.update(appointment);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            appointmentView.show(this.stage);
+        });
     }
 
     public void update(Patient patient) {
@@ -81,6 +139,9 @@ public class PatientView {
         fieldId.setText(Long.toString(patient.getId()));
         fieldName.setText(patient.getName());
         fieldPhone.setText(patient.getPhone());
+        fieldStreet.setText(patient.getAddress().street);
+        fieldCity.setText(patient.getAddress().city);
+        fieldPostalCode.setText(patient.getAddress().postalCode);
     }
 
     public void show(Stage stage) {
