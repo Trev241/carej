@@ -19,6 +19,7 @@ import me.caretaker.models.Appointment;
 import me.caretaker.models.Gender;
 import me.caretaker.models.Patient;
 import me.caretaker.views.AppointmentView;
+import me.caretaker.views.Dashboard;
 import me.caretaker.views.PatientView;
 
 import java.io.*;
@@ -36,7 +37,8 @@ public class Main extends Application {
 
     // Views
     private PatientView patientView;
-    private  AppointmentView appointmentView;
+    private AppointmentView appointmentView;
+    private Dashboard dashboard;
 
     @Override
     public void start(Stage primaryStage) {
@@ -54,6 +56,7 @@ public class Main extends Application {
 
         patientView = new PatientView();
         appointmentView = new AppointmentView();
+        dashboard = new Dashboard();
 
         // Load patient data from file
         loadPatientsFromFile();
@@ -105,7 +108,8 @@ public class Main extends Application {
             String password = passwordField.getText();
             // authentication
             if (isValidCredentials(username, password)) {
-                showDashboard();
+//                showDashboard();
+                dashboard.show(primaryStage);
             } else {
                 showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password.");
             }

@@ -1,9 +1,12 @@
 package me.caretaker.models;
 
 import com.google.gson.Gson;
+import javafx.util.converter.LocalDateStringConverter;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -135,5 +138,15 @@ public class Patient implements Serializable {
 
     public Date getDob() {
         return dob;
+    }
+
+    public LocalDate getDobAsLocalDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dob);
+
+        return LocalDate.of(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH));
     }
 }
