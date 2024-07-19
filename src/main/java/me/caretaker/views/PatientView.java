@@ -64,12 +64,18 @@ public class PatientView {
         Label labelPersonal = new Label("Personal");
         labelPersonal.setStyle("-fx-font-weight: bold; -fx-font-size: 18px");
         gridDetails.add(labelPersonal, 0, 0);
+        GridPane.setColumnSpan(labelPersonal, GridPane.REMAINING);
 
         gridDetails.add(new Label("ID"), 0, 1);
         fieldId = new TextField();
         fieldId.setEditable(false);
         fieldId.setDisable(true);
         gridDetails.add(fieldId, 1, 1);
+        GridPane.setHgrow(fieldId, Priority.ALWAYS);
+
+        ColumnConstraints col1 = new ColumnConstraints();
+        col1.setPercentWidth(25);
+        gridDetails.getColumnConstraints().add(col1);
 
         gridDetails.add(new Label("Name"), 0, 2);
         fieldName = new TextField();
@@ -82,6 +88,7 @@ public class PatientView {
         Label labelAddress = new Label("Address");
         labelAddress.setStyle("-fx-font-weight: bold; -fx-font-size: 18px");
         gridDetails.add(labelAddress, 0, 4);
+        GridPane.setColumnSpan(labelAddress, GridPane.REMAINING);
 
         gridDetails.add(new Label("Street"), 0, 5);
         fieldStreet = new TextField();
