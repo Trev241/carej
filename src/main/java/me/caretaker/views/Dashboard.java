@@ -4,10 +4,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import me.caretaker.models.Patient;
@@ -17,15 +14,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class Dashboard {
-    private Scene scene;
+    private final Scene scene;
     private Scene oldScene;
     private Stage stage;
 
-    private TextField fieldPatientId;
-    private TextField fieldName;
+    private final TextField fieldPatientId;
+    private final TextField fieldName;
 
-    private PatientView patientView;
-    private DatePicker pickerDob;
+    private final PatientView patientView;
+    private final DatePicker pickerDob;
 
     public Dashboard() {
         patientView = new PatientView();
@@ -114,6 +111,13 @@ public class Dashboard {
             if (patient != null ) {
                 patientView.update(patient);
                 patientView.show(stage);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Warning");
+                alert.setHeaderText("No patients found!");
+                alert.setContentText("There were no patients found matching the information given. " +
+                        "Please check if the information entered is correct.");
+                alert.showAndWait();
             }
         });
 
