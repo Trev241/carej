@@ -177,10 +177,10 @@ public class Main extends Application {
 
         Button viewPatientRecordsButton = new Button("Add Patient");
         viewPatientRecordsButton.setOnAction(event -> {
-            patientView.update(new Patient());
+            patientView.create();
             patientView.show(primaryStage);
         });
-       viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
+//       viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
 
         Button scheduleAppointmentButton = new Button("Schedule Appointment");
         scheduleAppointmentButton.setOnAction(e ->{

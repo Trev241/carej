@@ -21,6 +21,8 @@ public class PatientView {
 
     private Stage stage;
     private Patient patient;
+    private final Label labelHeader;
+    private final Button buttonBook;
 
     private final TextField fieldId;
     private final TextField fieldName;
@@ -28,6 +30,8 @@ public class PatientView {
     private final TextField fieldStreet;
     private final TextField fieldCity;
     private final TextField fieldPostalCode;
+
+    private boolean existing;
 
     public PatientView() {
         VBox root = new VBox();
@@ -38,7 +42,7 @@ public class PatientView {
 
         Button buttonSave = new Button("Save");
         Button buttonBack = new Button("Cancel");
-        Button buttonBook = new Button("Schedule Appointment");
+        buttonBook = new Button("Schedule Appointment");
 
         boxActions.getChildren().add(boxActionsLeft);
         boxActions.getChildren().add(boxActionsRight);
@@ -54,6 +58,11 @@ public class PatientView {
         boxActionsLeft.getChildren().add(buttonBook);
         boxActionsLeft.setAlignment(Pos.CENTER_LEFT);
 
+        labelHeader = new Label();
+        labelHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 24px");
+        labelHeader.setPadding(new Insets(15));
+
+        root.getChildren().add(labelHeader);
         root.getChildren().add(gridDetails);
         root.getChildren().add(boxActions);
 
@@ -140,12 +149,33 @@ public class PatientView {
         });
     }
 
+    public void create() {
+        existing = false;
+        updateFields(new Patient());
+
+        labelHeader.setText("New Patient");
+        buttonBook.setDisable(true);
+    }
+
     public void update(Patient patient) {
+        existing = true;
+        updateFields(patient);
+
+        labelHeader.setText("Update Existing Patient");
+        buttonBook.setDisable(false);
+    }
+
+    private void updateFields(Patient patient) {
         this.patient = patient;
 
         fieldId.setText(Long.toString(patient.getId()));
         fieldName.setText(patient.getName());
         fieldPhone.setText(patient.getPhone());
+
+        if (patient.getAddress() == null) {
+            patient.setAddress(new Address());
+        }
+
         fieldStreet.setText(patient.getAddress().street);
         fieldCity.setText(patient.getAddress().city);
         fieldPostalCode.setText(patient.getAddress().postalCode);
