@@ -14,7 +14,6 @@ import me.caretaker.models.Appointment;
 import me.caretaker.models.Patient;
 
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
 
 public class PatientView {
@@ -25,7 +24,7 @@ public class PatientView {
     private Patient patient;
     private final Label labelHeader;
     private final Button buttonBook;
-    private DatePicker pickerDob;
+    private final DatePicker pickerDob;
 
     private final TextField fieldId;
     private final TextField fieldName;
@@ -194,9 +193,5 @@ public class PatientView {
         oldScene = stage.getScene();
         this.stage = stage;
         this.stage.setScene(scene);
-    }
-
-    public Scene getScene() {
-        return scene;
     }
 }

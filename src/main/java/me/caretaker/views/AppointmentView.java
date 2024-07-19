@@ -74,7 +74,7 @@ public class AppointmentView {
                 appointment.setPatientID(patient.getId());
                 appointment.setReason(comboReason.getValue());
                 Calendar calendar = Calendar.getInstance();
-                calendar.set(datePicker.getValue().getYear(),datePicker.getValue().getMonthValue(),datePicker.getValue().getDayOfMonth());
+                calendar.set(datePicker.getValue().getYear(),datePicker.getValue().getMonthValue() - 1,datePicker.getValue().getDayOfMonth());
 
                 appointment.setDate(calendar.getTime());
 
