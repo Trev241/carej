@@ -95,7 +95,7 @@ public class AppointmentView {
         Calendar calender=Calendar.getInstance();
        calender.setTime(this.appointment.getDate());
 
-        Patient patient = Patient.load(appointment.getID());
+        Patient patient = Patient.load(appointment.getPatientID());
         fieldPatientId.setText(Long.toString(patient.getId()));
         fieldPatientName.setText(patient.getName());
         comboReason.setValue(appointment.getReason());
