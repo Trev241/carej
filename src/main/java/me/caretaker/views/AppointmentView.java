@@ -23,7 +23,6 @@ public class AppointmentView {
     private Parent oldRoot;
     private Scene scene;
 
-    private Stage stage;
     private Appointment appointment;
 
     private final TextField fieldPatientId;
@@ -70,11 +69,11 @@ public class AppointmentView {
         buttonBook.setOnAction(actionEvent -> {
             try {
                 Patient patient = Patient.load(Long.parseLong(fieldPatientId.getText()));
-                appointment= new Appointment();
+                appointment = new Appointment();
                 appointment.setPatientID(patient.getId());
                 appointment.setReason(comboReason.getValue());
                 Calendar calendar = Calendar.getInstance();
-                calendar.set(datePicker.getValue().getYear(),datePicker.getValue().getMonthValue(),datePicker.getValue().getDayOfMonth());
+                calendar.set(datePicker.getValue().getYear(), datePicker.getValue().getMonthValue(), datePicker.getValue().getDayOfMonth());
 
                 appointment.setDate(calendar.getTime());
 
@@ -93,17 +92,21 @@ public class AppointmentView {
     public void update(Appointment appointment) throws IOException {
 
         this.appointment = appointment;
-        Calendar calender=Calendar.getInstance();
-       calender.setTime(this.appointment.getDate());
+        Calendar calender = Calendar.getInstance();
+        calender.setTime(this.appointment.getDate());
 
         Patient patient = Patient.load(appointment.getPatientID());
         fieldPatientId.setText(Long.toString(patient.getId()));
         fieldPatientName.setText(patient.getName());
         comboReason.setValue(appointment.getReason());
 
-        LocalDate localDate = LocalDate.of(calender.get(Calendar.YEAR),calender.get(Calendar.MONTH),calender.get(Calendar.DAY_OF_MONTH));
+        LocalDate localDate = LocalDate.of(calender.get(Calendar.YEAR), calender.get(Calendar.MONTH), calender.get(Calendar.DAY_OF_MONTH));
         datePicker.setValue(localDate);
 
+    }
+
+    public Parent getRoot() {
+        return root;
     }
 
     public void show(Scene scene) {

@@ -9,20 +9,20 @@ import java.util.Date;
 
 public class Appointment {
     private long patient_id;
-    private long id;
+    private final long id;
     private AppointmentType reason;
     private Date date;
 
     // Constructors, getters, and setters
     public Appointment() {
-        this.id=System.currentTimeMillis();
+        this.id = System.currentTimeMillis();
     }
 
     public Appointment(long patient_id, AppointmentType reason, Date date) {
-        this.patient_id=patient_id;
+        this.patient_id = patient_id;
         this.reason = reason;
         this.date = date;
-        this.id= System.currentTimeMillis();
+        this.id = System.currentTimeMillis();
     }
 
     public long getPatientID() {
@@ -30,10 +30,11 @@ public class Appointment {
     }
 
     public void setPatientID(long patient_id) {
-        this.patient_id=patient_id;
+        this.patient_id = patient_id;
     }
-    public long getID(){
-        return  id;
+
+    public long getID() {
+        return id;
     }
 
     public AppointmentType getReason() {

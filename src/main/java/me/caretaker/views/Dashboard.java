@@ -7,7 +7,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
 import me.caretaker.models.Patient;
 
 import java.io.IOException;
@@ -33,7 +32,8 @@ public class Dashboard {
 
         // Title header
         Label labelMainHeader = new Label("CareJ");
-        labelMainHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 24px");
+        labelMainHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-background-color: black; -fx-text-fill: white;");
+        labelMainHeader.setMaxWidth(Double.MAX_VALUE);
         labelMainHeader.setPadding(new Insets(15, 15, 10, 15));
 
         // New admission
@@ -101,23 +101,21 @@ public class Dashboard {
             } else {
                 List<Patient> patients = Patient.loadAll();
                 for (Patient p : patients) {
-                    if (p.getName().equalsIgnoreCase(patientName) &&
-                        p.getDobAsLocalDate().equals(dobLocal)) {
+                    if (p.getName().equalsIgnoreCase(patientName) && p.getDobAsLocalDate().equals(dobLocal)) {
                         patient = p;
                         break;
                     }
                 }
             }
 
-            if (patient != null ) {
+            if (patient != null) {
                 patientView.update(patient);
                 patientView.show(scene);
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Warning");
                 alert.setHeaderText("No patients found!");
-                alert.setContentText("There were no patients found matching the information given. " +
-                        "Please check if the information entered is correct.");
+                alert.setContentText("There were no patients found matching the information given. " + "Please check if the information entered is correct.");
                 alert.showAndWait();
             }
         });
@@ -129,18 +127,22 @@ public class Dashboard {
         boxActions.setPadding(new Insets(5, 15, 15, 15));
         boxActions.setAlignment(Pos.CENTER_RIGHT);
 
+        // Appointment schedule
+        Label labelHeaderAppt = new Label("Schedule an appointment");
+        labelHeaderAppt.setStyle("-fx-font-weight: bold; -fx-font-size: 18px");
+        labelHeaderAppt.setPadding(new Insets(15, 15, 5, 15));
+        AppointmentView appointmentView = new AppointmentView();
+
         root.getChildren().add(labelMainHeader);
         root.getChildren().add(boxAdmit);
         root.getChildren().add(labelHeader);
         root.getChildren().add(gridSearch);
         root.getChildren().add(boxActions);
+        root.getChildren().add(labelHeaderAppt);
+        root.getChildren().add(appointmentView.getRoot());
     }
 
     public void show(Scene scene) {
-//        oldScene = stage.getScene();
-//        this.stage = stage;
-//        this.stage.setScene(scene);
-
         oldRoot = scene.getRoot();
         this.scene = scene;
         this.scene.setRoot(root);

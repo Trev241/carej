@@ -26,14 +26,13 @@ public class Patient implements Serializable {
         this.id = System.currentTimeMillis();
     }
 
-    public Patient(
-            String name,
-            int age,
-            Date dob,
-            Gender gender,
-            Address address,
-            String medicalHistory,
-            String phone
+    public Patient(String name,
+                   int age,
+                   Date dob,
+                   Gender gender,
+                   Address address,
+                   String medicalHistory,
+                   String phone
     ) {
         this.name = name;
         this.age = age;
@@ -83,8 +82,7 @@ public class Patient implements Serializable {
                 "name='" + name + '\'' +
                 ", age=" + age +
                 ", medicalHistory='" + medicalHistory + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
+                ", phone='" + phone + '\'' + '}';
     }
 
     public String getNotes() {
@@ -99,25 +97,25 @@ public class Patient implements Serializable {
         return this.id;
     }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
     public void setName(String name) {
         this.name = name;
     }
 
-	public int getAge() {
-		return age;
-	}
+    public int getAge() {
+        return age;
+    }
 
-	public String getMedicalHistory() {
-		return medicalHistory;
-	}
+    public String getMedicalHistory() {
+        return medicalHistory;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
     public void setPhone(String phone) {
         this.phone = phone;

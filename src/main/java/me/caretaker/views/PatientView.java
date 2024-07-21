@@ -121,11 +121,7 @@ public class PatientView {
         buttonSave.setOnAction(actionEvent -> {
             patient.setName(fieldName.getText());
             patient.setPhone(fieldPhone.getText());
-            patient.setAddress(new Address(
-                    fieldStreet.getText(),
-                    fieldCity.getText(),
-                    fieldPostalCode.getText()
-            ));
+            patient.setAddress(new Address(fieldStreet.getText(), fieldCity.getText(), fieldPostalCode.getText()));
             patient.setDob(pickerDob.getValue());
 
             try {
@@ -191,10 +187,6 @@ public class PatientView {
     }
 
     public void show(Scene scene) {
-//        oldScene = stage.getScene();
-//        this.stage = stage;
-//        this.stage.setScene(scene);
-
         oldRoot = scene.getRoot();
         this.scene = scene;
         this.scene.setRoot(root);
