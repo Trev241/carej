@@ -152,7 +152,7 @@ public class PatientView {
                 throw new RuntimeException(e);
             }
 
-            appointmentView.show(this.stage);
+            appointmentView.show(scene);
         });
     }
 

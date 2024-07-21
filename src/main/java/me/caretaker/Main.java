@@ -194,7 +194,7 @@ public class Main extends Application {
         Button scheduleAppointmentButton = new Button("Schedule Appointment");
         scheduleAppointmentButton.setOnAction(e ->{
 
-           appointmentView.show(primaryStage);
+           appointmentView.show(scene);
         } );
 
         Button viewPatientRecordsDetailsButton = new Button("View Patient Records");
