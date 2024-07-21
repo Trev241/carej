@@ -34,6 +34,7 @@ public class Main extends Application {
     private Stage primaryStage;
     private List<Patient> patients;
     private List<Appointment> appointments;
+    private Scene scene;
 
     // Views
     private PatientView patientView;
@@ -50,9 +51,12 @@ public class Main extends Application {
         }
 
         this.primaryStage = primaryStage;
+        VBox mainMenuVBox = new VBox();
+        this.scene = new Scene(mainMenuVBox, 400, 300);
         this.patients = new ArrayList<>();
         this.appointments = new ArrayList<>();
         primaryStage.setTitle("Healthcare Application");
+        primaryStage.setMaximized(true);
 
         patientView = new PatientView();
         appointmentView = new AppointmentView();
@@ -65,18 +69,19 @@ public class Main extends Application {
         //loadAppointmentsFromFile();
 
         // Main Menu UI
-        VBox mainMenuVBox = new VBox();
         mainMenuVBox.setAlignment(Pos.CENTER);
         mainMenuVBox.setSpacing(10);
         mainMenuVBox.setPadding(new Insets(20));
 
         Button loginButton = new Button("Login");
-        loginButton.setOnAction(e -> showLoginScreen());
+//        loginButton.setOnAction(e -> showLoginScreen());
+        loginButton.setOnAction(e -> {
+            dashboard.show(scene);
+        });
 
         mainMenuVBox.getChildren().addAll(loginButton);
 
-        Scene mainMenuScene = new Scene(mainMenuVBox, 400, 300);
-        primaryStage.setScene(mainMenuScene);
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 
@@ -109,7 +114,7 @@ public class Main extends Application {
             // authentication
             if (isValidCredentials(username, password)) {
 //                showDashboard();
-                dashboard.show(primaryStage);
+                dashboard.show(scene);
             } else {
                 showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password.");
             }
@@ -182,7 +187,7 @@ public class Main extends Application {
         Button viewPatientRecordsButton = new Button("Add Patient");
         viewPatientRecordsButton.setOnAction(event -> {
             patientView.create();
-            patientView.show(primaryStage);
+            patientView.show(scene);
         });
 //       viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
 
@@ -206,7 +211,7 @@ public class Main extends Application {
 //            showScrollableAlert("Patient Records", patientInfo.toString());
 
             patientView.update(patients.getFirst());
-            patientView.show(primaryStage);
+            patientView.show(scene);
         });
 
         Button viewScheduledAppointmentDetailsButton = new Button("View Scheduled Appointments");

@@ -2,6 +2,7 @@ package me.caretaker.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -17,8 +18,9 @@ import java.io.IOException;
 import java.util.Date;
 
 public class PatientView {
-    private final Scene scene;
-    private Scene oldScene;
+    private final VBox root;
+    private Parent oldRoot;
+    private Scene scene;
 
     private Stage stage;
     private Patient patient;
@@ -35,7 +37,7 @@ public class PatientView {
 
 
     public PatientView() {
-        VBox root = new VBox();
+        root = new VBox();
         HBox boxActions = new HBox();
         HBox boxActionsLeft = new HBox();
         HBox boxActionsRight = new HBox();
@@ -116,8 +118,6 @@ public class PatientView {
         fieldPostalCode = new TextField();
         gridDetails.add(fieldPostalCode, 1, 8);
 
-        scene = new Scene(root);
-
         buttonSave.setOnAction(actionEvent -> {
             patient.setName(fieldName.getText());
             patient.setPhone(fieldPhone.getText());
@@ -134,10 +134,11 @@ public class PatientView {
                 throw new RuntimeException(e);
             }
 
-            this.stage.setScene(oldScene);
+//            this.stage.setScene(oldScene);
+            this.scene.setRoot(oldRoot);
         });
 
-        buttonBack.setOnAction(actionEvent -> this.stage.setScene(oldScene));
+        buttonBack.setOnAction(actionEvent -> this.scene.setRoot(oldRoot));
 
         buttonBook.setOnAction(actionEvent -> {
             AppointmentView appointmentView = new AppointmentView();
@@ -189,9 +190,13 @@ public class PatientView {
         pickerDob.setValue(patient.getDobAsLocalDate());
     }
 
-    public void show(Stage stage) {
-        oldScene = stage.getScene();
-        this.stage = stage;
-        this.stage.setScene(scene);
+    public void show(Scene scene) {
+//        oldScene = stage.getScene();
+//        this.stage = stage;
+//        this.stage.setScene(scene);
+
+        oldRoot = scene.getRoot();
+        this.scene = scene;
+        this.scene.setRoot(root);
     }
 }
