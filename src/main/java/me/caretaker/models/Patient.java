@@ -137,7 +137,7 @@ public class Patient implements Serializable {
 
     public void setDob(LocalDate dob) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(dob.getYear(), dob.getMonthValue() - 1, dob.getDayOfMonth());
+        calendar.set(dob.getYear(), dob.getMonthValue(), dob.getDayOfMonth());
 
         this.dob = calendar.getTime();
     }
