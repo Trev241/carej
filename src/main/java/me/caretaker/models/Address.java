@@ -23,11 +23,11 @@ public class Address {
             for (int i = 0; i < postalCode.length(); i++) {
                 char c = postalCode.charAt(i);
                 if ((i % 2 == 0 && Character.isDigit(c)) || (i % 2 == 1 && Character.isLetter(c)))
-                    throw new IllegalArgumentException("Postal code does not comply with format A1A 1A1 - " + postalCode);
+                    throw new IllegalArgumentException("Postal code does not comply with format A1A 1A1");
             }
         }
         this.postalCode = postalCode;
-        //comment
+
         // Initializing city
         if (city != null) {
             for (int i = 0; i < city.length(); i++)

@@ -2,12 +2,9 @@ package me.caretaker.views;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import me.caretaker.models.Address;
@@ -19,7 +16,7 @@ import java.util.Date;
 
 public class PatientView {
     private final VBox root;
-    private Parent oldRoot;
+    private Node oldRoot;
     private Scene scene;
 
     private Stage stage;
@@ -65,9 +62,14 @@ public class PatientView {
         labelHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 24px");
         labelHeader.setPadding(new Insets(15));
 
+        root.setPadding(new Insets(25, 150, 25, 150));
         root.getChildren().add(labelHeader);
         root.getChildren().add(gridDetails);
         root.getChildren().add(boxActions);
+
+        root.setMaxHeight(Double.MAX_VALUE);
+        for (Node node : root.getChildren())
+            VBox.setVgrow(node, Priority.ALWAYS);
 
         gridDetails.setPadding(new Insets(15));
         gridDetails.setHgap(10);
@@ -119,22 +121,28 @@ public class PatientView {
         gridDetails.add(fieldPostalCode, 1, 8);
 
         buttonSave.setOnAction(actionEvent -> {
-            patient.setName(fieldName.getText());
-            patient.setPhone(fieldPhone.getText());
-            patient.setAddress(new Address(fieldStreet.getText(), fieldCity.getText(), fieldPostalCode.getText()));
-            patient.setDob(pickerDob.getValue());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Failed to create patient record");
 
             try {
-                patient.save();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                patient.setName(fieldName.getText());
+                patient.setPhone(fieldPhone.getText());
+                patient.setAddress(new Address(fieldStreet.getText(), fieldCity.getText(), fieldPostalCode.getText()));
+                patient.setDob(pickerDob.getValue());
 
-//            this.stage.setScene(oldScene);
-            this.scene.setRoot(oldRoot);
+                patient.save();
+                ((ScrollPane) this.scene.getRoot()).setContent(oldRoot);
+            } catch (IOException e) {
+                alert.setContentText("Please verify the application's permissions and try again.");
+                alert.showAndWait();
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
         });
 
-        buttonBack.setOnAction(actionEvent -> this.scene.setRoot(oldRoot));
+        buttonBack.setOnAction(actionEvent -> ((ScrollPane) this.scene.getRoot()).setContent(oldRoot));
 
         buttonBook.setOnAction(actionEvent -> {
             AppointmentView appointmentView = new AppointmentView();
@@ -187,8 +195,12 @@ public class PatientView {
     }
 
     public void show(Scene scene) {
-        oldRoot = scene.getRoot();
+//        oldRoot = scene.getRoot();
+//        this.scene = scene;
+//        this.scene.setRoot(root);
+
+        oldRoot = ((ScrollPane) scene.getRoot()).getContent();
         this.scene = scene;
-        this.scene.setRoot(root);
+        ((ScrollPane) this.scene.getRoot()).setContent(root);
     }
 }

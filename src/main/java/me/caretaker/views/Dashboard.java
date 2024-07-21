@@ -3,7 +3,7 @@ package me.caretaker.views;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Dashboard {
     private final VBox root;
-    private Parent oldRoot;
+    private Node oldRoot;
     private Scene scene;
 
     private final TextField fieldPatientId;
@@ -28,11 +28,12 @@ public class Dashboard {
         patientView = new PatientView();
 
         root = new VBox();
+        VBox boxContent = new VBox();
         HBox boxActions = new HBox();
 
         // Title header
         Label labelMainHeader = new Label("CareJ");
-        labelMainHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 24px; -fx-background-color: black; -fx-text-fill: white;");
+        labelMainHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 32px; -fx-background-color: black; -fx-text-fill: white;");
         labelMainHeader.setMaxWidth(Double.MAX_VALUE);
         labelMainHeader.setPadding(new Insets(15, 15, 10, 15));
 
@@ -109,6 +110,10 @@ public class Dashboard {
             }
 
             if (patient != null) {
+                fieldName.clear();
+                fieldPatientId.clear();
+                pickerDob.setValue(null);
+
                 patientView.update(patient);
                 patientView.show(scene);
             } else {
@@ -134,17 +139,27 @@ public class Dashboard {
         AppointmentView appointmentView = new AppointmentView();
 
         root.getChildren().add(labelMainHeader);
-        root.getChildren().add(boxAdmit);
-        root.getChildren().add(labelHeader);
-        root.getChildren().add(gridSearch);
-        root.getChildren().add(boxActions);
-        root.getChildren().add(labelHeaderAppt);
-        root.getChildren().add(appointmentView.getRoot());
+        root.getChildren().add(boxContent);
+
+        boxContent.getChildren().add(boxAdmit);
+        boxContent.getChildren().add(labelHeader);
+        boxContent.getChildren().add(gridSearch);
+        boxContent.getChildren().add(boxActions);
+        boxContent.getChildren().add(labelHeaderAppt);
+        boxContent.getChildren().add(appointmentView.getRoot());
+
+        boxContent.setPadding(new Insets(25, 150, 25, 150));
+        for (Node node : boxContent.getChildren())
+            VBox.setVgrow(node, Priority.ALWAYS);
     }
 
     public void show(Scene scene) {
-        oldRoot = scene.getRoot();
+//        oldRoot = scene.getRoot();
+//        this.scene = scene;
+//        this.scene.setRoot(root);
+
+        oldRoot = ((ScrollPane) scene.getRoot()).getContent();
         this.scene = scene;
-        this.scene.setRoot(root);
+        ((ScrollPane) this.scene.getRoot()).setContent(root);
     }
 }

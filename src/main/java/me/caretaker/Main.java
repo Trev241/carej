@@ -35,6 +35,7 @@ public class Main extends Application {
     private List<Patient> patients;
     private List<Appointment> appointments;
     private Scene scene;
+    private ScrollPane scrollPane;
 
     // Views
     private PatientView patientView;
@@ -52,11 +53,15 @@ public class Main extends Application {
 
         this.primaryStage = primaryStage;
         VBox mainMenuVBox = new VBox();
-        this.scene = new Scene(mainMenuVBox, 400, 300);
+        this.scrollPane = new ScrollPane();
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setContent(mainMenuVBox);
+        this.primaryStage.setMaximized(true);
+        this.scene = new Scene(scrollPane, Double.MAX_VALUE, Double.MAX_VALUE);
         this.patients = new ArrayList<>();
         this.appointments = new ArrayList<>();
         primaryStage.setTitle("Healthcare Application");
-        primaryStage.setMaximized(true);
 
         patientView = new PatientView();
         appointmentView = new AppointmentView();

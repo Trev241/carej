@@ -3,6 +3,7 @@ package me.caretaker.views;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -20,7 +21,7 @@ import java.util.Calendar;
 
 public class AppointmentView {
     private final VBox root;
-    private Parent oldRoot;
+    private Node oldRoot;
     private Scene scene;
 
     private Appointment appointment;
@@ -73,20 +74,28 @@ public class AppointmentView {
                 appointment.setPatientID(patient.getId());
                 appointment.setReason(comboReason.getValue());
                 Calendar calendar = Calendar.getInstance();
-                calendar.set(datePicker.getValue().getYear(), datePicker.getValue().getMonthValue(), datePicker.getValue().getDayOfMonth());
+                calendar.set(
+                        datePicker.getValue().getYear(),
+                        datePicker.getValue().getMonthValue(),
+                        datePicker.getValue().getDayOfMonth());
 
                 appointment.setDate(calendar.getTime());
 
                 appointment.save();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException | NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Failed to schedule an appointment");
+                alert.setContentText("Please verify the patient's ID and the appointment date.");
+                alert.showAndWait();
             }
 
 //            this.stage.setScene(oldScene);
-            this.scene.setRoot(oldRoot);
+            ((ScrollPane) this.scene.getRoot()).setContent(oldRoot);
+
         });
 
-        buttonBack.setOnAction(actionEvent -> this.scene.setRoot(oldRoot));
+        buttonBack.setOnAction(actionEvent -> ((ScrollPane) this.scene.getRoot()).setContent(oldRoot));
     }
 
     public void update(Appointment appointment) throws IOException {
@@ -100,7 +109,10 @@ public class AppointmentView {
         fieldPatientName.setText(patient.getName());
         comboReason.setValue(appointment.getReason());
 
-        LocalDate localDate = LocalDate.of(calender.get(Calendar.YEAR), calender.get(Calendar.MONTH), calender.get(Calendar.DAY_OF_MONTH));
+        LocalDate localDate = LocalDate.of(
+                calender.get(Calendar.YEAR),
+                calender.get(Calendar.MONTH),
+                calender.get(Calendar.DAY_OF_MONTH));
         datePicker.setValue(localDate);
 
     }
@@ -114,8 +126,8 @@ public class AppointmentView {
 //        this.stage = stage;
 //        this.stage.setScene(scene);
 
-        oldRoot = scene.getRoot();
+        oldRoot = ((ScrollPane) scene.getRoot()).getContent();
         this.scene = scene;
-        this.scene.setRoot(root);
+        ((ScrollPane) this.scene.getRoot()).setContent(root);
     }
 }
