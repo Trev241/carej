@@ -31,7 +31,7 @@ public class PatientView {
     private final TextField fieldStreet;
     private final TextField fieldCity;
     private final TextField fieldPostalCode;
-
+    private final TextArea areaHistory;
 
     public PatientView() {
         root = new VBox();
@@ -120,6 +120,15 @@ public class PatientView {
         fieldPostalCode = new TextField();
         gridDetails.add(fieldPostalCode, 1, 8);
 
+        Label labelHistory = new Label("Medical History");
+        labelHistory.setStyle("-fx-font-weight: bold; -fx-font-size: 18px");
+        gridDetails.add(labelHistory, 0, 9);
+        GridPane.setColumnSpan(labelHistory, GridPane.REMAINING);
+
+        areaHistory = new TextArea();
+        gridDetails.add(areaHistory, 0, 10);
+        GridPane.setColumnSpan(areaHistory, GridPane.REMAINING);
+
         buttonSave.setOnAction(actionEvent -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -130,6 +139,7 @@ public class PatientView {
                 patient.setPhone(fieldPhone.getText());
                 patient.setAddress(new Address(fieldStreet.getText(), fieldCity.getText(), fieldPostalCode.getText()));
                 patient.setDob(pickerDob.getValue());
+                patient.setMedicalHistory(areaHistory.getText());
 
                 patient.save();
                 ((ScrollPane) this.scene.getRoot()).setContent(oldRoot);
@@ -192,6 +202,7 @@ public class PatientView {
         fieldPostalCode.setText(patient.getAddress().postalCode);
 
         pickerDob.setValue(patient.getDobAsLocalDate());
+        areaHistory.setText(patient.getMedicalHistory());
     }
 
     public void show(Scene scene) {

@@ -113,6 +113,10 @@ public class Patient implements Serializable {
         return medicalHistory;
     }
 
+    public void setMedicalHistory(String medicalHistory) {
+        this.medicalHistory = medicalHistory;
+    }
+
     public String getPhone() {
         return phone;
     }
