@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import me.caretaker.models.Appointment;
 import me.caretaker.models.AppointmentType;
 import me.caretaker.models.Patient;
@@ -37,12 +36,19 @@ public class AppointmentView {
         GridPane gridDetails = new GridPane();
 
         Button buttonBook = new Button("Book Appointment");
+        boxActions.setSpacing(5);
+        boxActions.setPadding(new Insets( 15));
         Button buttonBack = new Button("Cancel");
 
         boxActions.getChildren().add(buttonBook);
         boxActions.getChildren().add(buttonBack);
         boxActions.setAlignment(Pos.CENTER_RIGHT);
 
+        Label labelheader = new Label("Schedule Appointment ");
+        labelheader.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+        labelheader.setPadding(new Insets(15));
+
+        root.getChildren().add(labelheader);
         root.getChildren().add(gridDetails);
         root.getChildren().add(boxActions);
 

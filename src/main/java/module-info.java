@@ -2,6 +2,7 @@ module me.caretaker {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.google.gson;
+    requires javafx.base;
 
 
     opens me.caretaker to javafx.fxml, com.google.gson;

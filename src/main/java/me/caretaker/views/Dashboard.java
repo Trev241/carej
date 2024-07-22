@@ -145,8 +145,8 @@ public class Dashboard {
         boxContent.getChildren().add(labelHeader);
         boxContent.getChildren().add(gridSearch);
         boxContent.getChildren().add(boxActions);
-        boxContent.getChildren().add(labelHeaderAppt);
-        boxContent.getChildren().add(appointmentView.getRoot());
+        //boxContent.getChildren().add(labelHeaderAppt);
+       // boxContent.getChildren().add(appointmentView.getRoot());
 
         boxContent.setPadding(new Insets(25, 150, 25, 150));
         for (Node node : boxContent.getChildren())
