@@ -3,6 +3,7 @@ package me.caretaker;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -79,10 +80,10 @@ public class Main extends Application {
         mainMenuVBox.setPadding(new Insets(20));
 
         Button loginButton = new Button("Login");
-//        loginButton.setOnAction(e -> showLoginScreen());
-        loginButton.setOnAction(e -> {
-            dashboard.show(scene);
-        });
+        loginButton.setOnAction(e -> showLoginScreen());
+//        loginButton.setOnAction(e -> {
+//            dashboard.show(scene);
+//        });
 
         mainMenuVBox.getChildren().addAll(loginButton);
 
@@ -91,10 +92,11 @@ public class Main extends Application {
     }
 
     private void showLoginScreen() {
-        primaryStage.setScene(createLoginScene());
+//        primaryStage.setScene(createLoginScene());
+        ((ScrollPane) primaryStage.getScene().getRoot()).setContent(createLoginScene());
     }
 
-    private Scene createLoginScene() {
+    private Node createLoginScene() {
         GridPane loginGrid = new GridPane();
         loginGrid.setAlignment(Pos.CENTER);
         loginGrid.setHgap(10);
@@ -127,12 +129,13 @@ public class Main extends Application {
         loginGrid.add(loginButton, 1, 2);
 
         // Create scene for login screen
-        Scene loginScene = new Scene(loginGrid, 400, 300);
-        primaryStage.setScene(loginScene);
+//        Scene loginScene = new Scene(loginGrid, 400, 300);
+//        primaryStage.setScene(loginScene);
 
         // Show the primary stage
-        primaryStage.show();
-        return loginScene;
+//        primaryStage.show();
+
+        return loginGrid;
     }
 
     private void loadPatientsFromFile() {
@@ -197,10 +200,10 @@ public class Main extends Application {
 //       viewPatientRecordsButton.setOnAction(e -> showPatientRecords());
 
         Button scheduleAppointmentButton = new Button("Schedule Appointment");
-        scheduleAppointmentButton.setOnAction(e ->{
+        scheduleAppointmentButton.setOnAction(e -> {
 
-           appointmentView.show(scene);
-        } );
+            appointmentView.show(scene);
+        });
 
         Button viewPatientRecordsDetailsButton = new Button("View Patient Records");
         viewPatientRecordsDetailsButton.setOnAction(e -> {
@@ -241,7 +244,6 @@ public class Main extends Application {
         primaryStage.setScene(dashboardScene);
         primaryStage.show();
     }
-
 
 
     private void showPatientRecords() {
