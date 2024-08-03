@@ -12,6 +12,7 @@ import me.caretaker.models.Appointment;
 import me.caretaker.models.Patient;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class PatientView {
@@ -138,17 +139,16 @@ public class PatientView {
                 patient.setName(fieldName.getText());
                 patient.setPhone(fieldPhone.getText());
                 patient.setAddress(new Address(fieldStreet.getText(), fieldCity.getText(), fieldPostalCode.getText()));
-                patient.setDob(pickerDob.getValue());
+                patient.setDob(java.sql.Date.valueOf(pickerDob.getValue()));
                 patient.setMedicalHistory(areaHistory.getText());
 
                 patient.save();
                 ((ScrollPane) this.scene.getRoot()).setContent(oldRoot);
-            } catch (IOException e) {
-                alert.setContentText("Please verify the application's permissions and try again.");
-                alert.showAndWait();
             } catch (IllegalArgumentException e) {
                 alert.setContentText(e.getMessage());
                 alert.showAndWait();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
 
@@ -158,11 +158,14 @@ public class PatientView {
             AppointmentView appointmentView = new AppointmentView();
             Appointment appointment = new Appointment();
             appointment.setPatientID(this.patient.getId());
-            appointment.setDate(new Date());
+            // Use the setDateAndTime method with current date and default time (e.g., 00:00)
+            appointment.setDateAndTime(new java.sql.Date(new Date().getTime()), 0, 0);
 
             try {
                 appointmentView.update(appointment);
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
 
@@ -176,6 +179,9 @@ public class PatientView {
         labelHeader.setText("New Patient");
         buttonBook.setDisable(true);
         pickerDob.setDisable(false);
+
+        // Explicitly set DatePicker to null or a default value if needed
+        pickerDob.setValue(null);
     }
 
     public void update(Patient patient) {
@@ -201,7 +207,7 @@ public class PatientView {
         fieldCity.setText(patient.getAddress().city);
         fieldPostalCode.setText(patient.getAddress().postalCode);
 
-        pickerDob.setValue(patient.getDobAsLocalDate());
+        pickerDob.setValue(patient.getDobAsLocalDate() != null ? patient.getDobAsLocalDate() : null);
         areaHistory.setText(patient.getMedicalHistory());
     }
 

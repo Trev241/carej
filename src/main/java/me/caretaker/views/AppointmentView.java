@@ -15,8 +15,11 @@ import me.caretaker.models.AppointmentType;
 import me.caretaker.models.Patient;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.stream.IntStream;
 
 public class AppointmentView {
     private final VBox root;
@@ -29,6 +32,8 @@ public class AppointmentView {
     private final TextField fieldPatientName;
     private final ComboBox<AppointmentType> comboReason;
     private final DatePicker datePicker;
+    private final ComboBox<Integer> comboHour;
+    private final ComboBox<Integer> comboMinute;
 
     public AppointmentView() {
         root = new VBox();
@@ -37,18 +42,18 @@ public class AppointmentView {
 
         Button buttonBook = new Button("Book Appointment");
         boxActions.setSpacing(5);
-        boxActions.setPadding(new Insets( 15));
+        boxActions.setPadding(new Insets(15));
         Button buttonBack = new Button("Cancel");
 
         boxActions.getChildren().add(buttonBook);
         boxActions.getChildren().add(buttonBack);
         boxActions.setAlignment(Pos.CENTER_RIGHT);
 
-        Label labelheader = new Label("Schedule Appointment ");
-        labelheader.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
-        labelheader.setPadding(new Insets(15));
+        Label labelHeader = new Label("Schedule Appointment ");
+        labelHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+        labelHeader.setPadding(new Insets(15));
 
-        root.getChildren().add(labelheader);
+        root.getChildren().add(labelHeader);
         root.getChildren().add(gridDetails);
         root.getChildren().add(boxActions);
 
@@ -73,42 +78,59 @@ public class AppointmentView {
         datePicker = new DatePicker();
         gridDetails.add(datePicker, 1, 3);
 
+        gridDetails.add(new Label("Time"), 0, 4);
+        HBox timeBox = new HBox(5);
+        comboHour = new ComboBox<>(FXCollections.observableArrayList(IntStream.range(0, 24).boxed().toArray(Integer[]::new)));
+        comboMinute = new ComboBox<>(FXCollections.observableArrayList(IntStream.range(0, 60).boxed().toArray(Integer[]::new)));
+        comboHour.setEditable(false);
+        comboMinute.setEditable(false);
+        timeBox.getChildren().addAll(comboHour, new Label(":"), comboMinute);
+        gridDetails.add(timeBox, 1, 4);
+
         buttonBook.setOnAction(actionEvent -> {
             try {
                 Patient patient = Patient.load(Long.parseLong(fieldPatientId.getText()));
                 appointment = new Appointment();
                 appointment.setPatientID(patient.getId());
                 appointment.setReason(comboReason.getValue());
+
+                LocalDate localDate = datePicker.getValue();
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(
-                        datePicker.getValue().getYear(),
-                        datePicker.getValue().getMonthValue(),
-                        datePicker.getValue().getDayOfMonth());
+                        localDate.getYear(),
+                        localDate.getMonthValue() - 1,
+                        localDate.getDayOfMonth(),
+                        comboHour.getValue(),
+                        comboMinute.getValue()
+                );
 
-                appointment.setDate(calendar.getTime());
+                appointment.setTimestamp(new Timestamp(calendar.getTimeInMillis()));
 
                 appointment.save();
-            } catch (IOException | NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setHeaderText("Failed to schedule an appointment");
                 alert.setContentText("Please verify the patient's ID and the appointment date.");
                 alert.showAndWait();
+            } catch (SQLException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Failed to schedule an appointment");
+                alert.setContentText("A database error occurred.");
+                alert.showAndWait();
             }
 
-//            this.stage.setScene(oldScene);
             ((ScrollPane) this.scene.getRoot()).setContent(oldRoot);
-
         });
 
         buttonBack.setOnAction(actionEvent -> ((ScrollPane) this.scene.getRoot()).setContent(oldRoot));
     }
 
-    public void update(Appointment appointment) throws IOException {
-
+    public void update(Appointment appointment) throws IOException, SQLException {
         this.appointment = appointment;
-        Calendar calender = Calendar.getInstance();
-        calender.setTime(this.appointment.getDate());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(this.appointment.getTimestamp());
 
         Patient patient = Patient.load(appointment.getPatientID());
         fieldPatientId.setText(Long.toString(patient.getId()));
@@ -116,11 +138,13 @@ public class AppointmentView {
         comboReason.setValue(appointment.getReason());
 
         LocalDate localDate = LocalDate.of(
-                calender.get(Calendar.YEAR),
-                calender.get(Calendar.MONTH),
-                calender.get(Calendar.DAY_OF_MONTH));
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH));
         datePicker.setValue(localDate);
 
+        comboHour.setValue(calendar.get(Calendar.HOUR_OF_DAY));
+        comboMinute.setValue(calendar.get(Calendar.MINUTE));
     }
 
     public Parent getRoot() {
@@ -128,10 +152,6 @@ public class AppointmentView {
     }
 
     public void show(Scene scene) {
-//        oldScene = stage.getScene();
-//        this.stage = stage;
-//        this.stage.setScene(scene);
-
         oldRoot = ((ScrollPane) scene.getRoot()).getContent();
         this.scene = scene;
         ((ScrollPane) this.scene.getRoot()).setContent(root);

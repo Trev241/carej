@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import me.caretaker.models.Patient;
 
-import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -88,39 +88,45 @@ public class Dashboard {
 
         Button buttonSearch = new Button("Search");
         buttonSearch.setOnAction(actionEvent -> {
-            long patientId = (fieldPatientId.getText().isEmpty()) ? -1 : Long.parseLong(fieldPatientId.getText());
+            long patientId = fieldPatientId.getText().isEmpty() ? -1 : Long.parseLong(fieldPatientId.getText());
             String patientName = fieldName.getText();
             LocalDate dobLocal = pickerDob.getValue();
             Patient patient = null;
 
-            if (patientId != -1) {
-                try {
+            try {
+                if (patientId != -1) {
                     patient = Patient.load(patientId);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                List<Patient> patients = Patient.loadAll();
-                for (Patient p : patients) {
-                    if (p.getName().equalsIgnoreCase(patientName) && p.getDobAsLocalDate().equals(dobLocal)) {
-                        patient = p;
-                        break;
+                } else {
+                    List<Patient> patients = Patient.loadAll();
+                    for (Patient p : patients) {
+                        if (p.getName() != null && p.getName().equalsIgnoreCase(patientName) &&
+                                p.getDobAsLocalDate() != null && p.getDobAsLocalDate().equals(dobLocal)) {
+                            patient = p;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (patient != null) {
-                fieldName.clear();
-                fieldPatientId.clear();
-                pickerDob.setValue(null);
+                if (patient != null) {
+                    fieldName.clear();
+                    fieldPatientId.clear();
+                    pickerDob.setValue(null);
 
-                patientView.update(patient);
-                patientView.show(scene);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Warning");
-                alert.setHeaderText("No patients found!");
-                alert.setContentText("There were no patients found matching the information given. " + "Please check if the information entered is correct.");
+                    patientView.update(patient);
+                    patientView.show(scene);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Warning");
+                    alert.setHeaderText("No patients found!");
+                    alert.setContentText("There were no patients found matching the information given. Please check if the information entered is correct.");
+                    alert.showAndWait();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Database Error");
+                alert.setContentText("An error occurred while accessing the database. Please try again later.");
                 alert.showAndWait();
             }
         });
@@ -146,7 +152,7 @@ public class Dashboard {
         boxContent.getChildren().add(gridSearch);
         boxContent.getChildren().add(boxActions);
         //boxContent.getChildren().add(labelHeaderAppt);
-       // boxContent.getChildren().add(appointmentView.getRoot());
+        //boxContent.getChildren().add(appointmentView.getRoot());
 
         boxContent.setPadding(new Insets(25, 150, 25, 150));
         for (Node node : boxContent.getChildren())
@@ -154,10 +160,6 @@ public class Dashboard {
     }
 
     public void show(Scene scene) {
-//        oldRoot = scene.getRoot();
-//        this.scene = scene;
-//        this.scene.setRoot(root);
-
         oldRoot = ((ScrollPane) scene.getRoot()).getContent();
         this.scene = scene;
         ((ScrollPane) this.scene.getRoot()).setContent(root);

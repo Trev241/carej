@@ -5,13 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -26,8 +20,9 @@ import me.caretaker.views.PatientView;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 public class Main extends Application {
@@ -157,7 +152,11 @@ public class Main extends Application {
 //            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load patients: " + e.getMessage());
 //        }
 
-        patients = Patient.loadAll();
+        try {
+            patients = Patient.loadAll();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 //    private void loadAppointmentsFromFile() {
@@ -284,17 +283,24 @@ public class Main extends Application {
 
             Patient patient = null;
             try {
+                Calendar calendar = Calendar.getInstance();
+                java.util.Date utilDate = calendar.getTime();
+                java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
                 patient = new Patient(
                         name,
                         Integer.parseInt(age),
-                        new Date(),
-                        Gender.M,
+                        sqlDate,
+                        Gender.MALE,
                         new Address("5600 Yonge Street", "North York", "M2N5S2"),
                         medicalHistory,
                         contactInfo);
                 patients.add(patient);
-                patient.save();
-            } catch (IllegalArgumentException | IOException ex) {
+                try {
+                    patient.save();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } catch (IllegalArgumentException ex) {
                 showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
             }
 
@@ -450,7 +456,11 @@ public class Main extends Application {
 //            showAlert(Alert.AlertType.ERROR, "Error", "Failed to read patients: " + e.getMessage());
 //        }
 
-        patients = Patient.loadAll();
+        try {
+            patients = Patient.loadAll();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

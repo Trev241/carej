@@ -37,4 +37,9 @@ public class Address {
 
         this.city = city;
     }
+
+    @Override
+    public String toString() {
+        return this.street + "|" + this.city + "|" + this.postalCode;
+    }
 }
