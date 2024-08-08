@@ -1,12 +1,17 @@
 package me.caretaker.models;
 
-import me.caretaker.database.Database;
+import me.caretaker.tasks.OperationType;
+import me.caretaker.tasks.PatientRepositoryTask;
 
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Patient implements Serializable {
     private long id;
@@ -18,6 +23,8 @@ public class Patient implements Serializable {
     private String medicalHistory;
     private String phone;
     private String notes;
+
+    static ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     public Patient() {
         this.id = System.currentTimeMillis();
@@ -41,15 +48,47 @@ public class Patient implements Serializable {
     }
 
     public void save() throws SQLException {
-        Database.savePatient(this);
+//        PatientRepository.save(this);
+        PatientRepositoryTask saveTask = new PatientRepositoryTask();
+        saveTask.setPatient(this);
+        saveTask.setOperation(OperationType.SAVE);
+
+        executorService.submit(saveTask);
     }
 
     public static Patient load(long id) throws SQLException {
-        return Database.loadPatient(id);
+//        return PatientRepository.one(id);
+        PatientRepositoryTask readTask = new PatientRepositoryTask();
+        readTask.setId(id);
+        readTask.setOperation(OperationType.ONE);
+
+        Future<Patient> future = (Future<Patient>) executorService.submit(readTask);
+        Patient patient = null;
+        try {
+            future.get();
+            patient = readTask.getPatient();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return patient;
     }
 
     public static List<Patient> loadAll() throws SQLException {
-        return Database.loadAllPatients();
+//        return PatientRepository.all();
+        PatientRepositoryTask readTask = new PatientRepositoryTask();
+        readTask.setOperation(OperationType.ALL);
+
+        Future<Patient> future = (Future<Patient>) executorService.submit(readTask);
+        List<Patient> patients = null;
+        try {
+            future.get();
+            patients = readTask.getPatients();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException();
+        }
+
+        return patients;
     }
 
     @Override
@@ -127,6 +166,7 @@ public class Patient implements Serializable {
     public String getMedicalHistory() {
         return medicalHistory;
     }
+
 
     public void setMedicalHistory(String medicalHistory) {
         this.medicalHistory = medicalHistory;

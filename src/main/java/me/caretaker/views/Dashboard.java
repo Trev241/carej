@@ -99,6 +99,7 @@ public class Dashboard {
                 } else {
                     List<Patient> patients = Patient.loadAll();
                     for (Patient p : patients) {
+                        System.out.println(p);
                         if (p.getName() != null && p.getName().equalsIgnoreCase(patientName) &&
                                 p.getDobAsLocalDate() != null && p.getDobAsLocalDate().equals(dobLocal)) {
                             patient = p;

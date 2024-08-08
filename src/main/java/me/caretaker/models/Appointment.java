@@ -1,17 +1,24 @@
 package me.caretaker.models;
 
-import me.caretaker.database.DatabaseAppointments;
+import me.caretaker.tasks.AppointmentRepositoryTask;
+import me.caretaker.tasks.OperationType;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.sql.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Appointment {
     private long patient_id;
     private final long id;
     private AppointmentType reason;
     private Timestamp timestamp;
+
+    static ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     public Appointment() {
         this.id = System.currentTimeMillis();
@@ -80,10 +87,29 @@ public class Appointment {
     }
 
     public void save() throws SQLException {
-        DatabaseAppointments.saveAppointment(this);
+//        AppointmentRepository.save(this);
+        AppointmentRepositoryTask writeTask = new AppointmentRepositoryTask();
+        writeTask.setAppointment(this);
+        writeTask.setOperation(OperationType.SAVE);
+
+        executorService.submit(writeTask);
     }
 
     public static Appointment load(long id) throws SQLException {
-        return DatabaseAppointments.loadAppointment(id);
+//        return AppointmentRepository.one(id);
+        AppointmentRepositoryTask readTask = new AppointmentRepositoryTask();
+        readTask.setId(id);
+        readTask.setOperation(OperationType.ONE);
+
+        Future<Appointment> future = (Future<Appointment>) executorService.submit(readTask);
+        Appointment appointment = null;
+        try {
+            future.get();
+            appointment = readTask.getAppointment();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        return appointment;
     }
 }
