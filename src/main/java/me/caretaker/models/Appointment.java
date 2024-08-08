@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.sql.Date;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -111,5 +112,21 @@ public class Appointment {
         }
 
         return appointment;
+    }
+
+    public static List<Appointment> loadAll() {
+        AppointmentRepositoryTask readTask = new AppointmentRepositoryTask();
+        readTask.setOperation(OperationType.ALL);
+
+        Future<Appointment> future = (Future<Appointment>) executorService.submit(readTask);
+        List<Appointment> appointments = null;
+        try {
+            future.get();
+            appointments = readTask.getAppointments();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException();
+        }
+
+        return appointments;
     }
 }

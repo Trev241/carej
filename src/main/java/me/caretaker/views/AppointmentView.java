@@ -28,14 +28,22 @@ public class AppointmentView {
 
     private Appointment appointment;
 
-    private final TextField fieldPatientId;
-    private final TextField fieldPatientName;
+    private TextField fieldPatientId;
+    private TextField fieldPatientName;
     private final ComboBox<AppointmentType> comboReason;
     private final DatePicker datePicker;
     private final ComboBox<Integer> comboHour;
     private final ComboBox<Integer> comboMinute;
 
+    private boolean viewMode;
+
     public AppointmentView() {
+        this(false);
+    }
+
+    public AppointmentView(boolean viewMode) {
+        this.viewMode = viewMode;
+
         root = new VBox();
         HBox boxActions = new HBox();
         GridPane gridDetails = new GridPane();
@@ -53,21 +61,26 @@ public class AppointmentView {
         labelHeader.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
         labelHeader.setPadding(new Insets(15));
 
-        root.getChildren().add(labelHeader);
+        if (!viewMode)
+            root.getChildren().add(labelHeader);
         root.getChildren().add(gridDetails);
-        root.getChildren().add(boxActions);
+        if (!viewMode)
+            root.getChildren().add(boxActions);
 
-        gridDetails.add(new Label("Patient ID"), 0, 0);
         gridDetails.setPadding(new Insets(15));
         gridDetails.setHgap(10);
         gridDetails.setVgap(10);
 
-        fieldPatientId = new TextField();
-        gridDetails.add(fieldPatientId, 1, 0);
+        if (!viewMode) {
+            gridDetails.add(new Label("Patient ID"), 0, 0);
 
-        gridDetails.add(new Label("Patient Name"), 0, 1);
-        fieldPatientName = new TextField();
-        gridDetails.add(fieldPatientName, 1, 1);
+            fieldPatientId = new TextField();
+            gridDetails.add(fieldPatientId, 1, 0);
+
+            gridDetails.add(new Label("Patient Name"), 0, 1);
+            fieldPatientName = new TextField();
+            gridDetails.add(fieldPatientName, 1, 1);
+        }
 
         gridDetails.add(new Label("Appointment Reason"), 0, 2);
         comboReason = new ComboBox<>(FXCollections.observableArrayList(AppointmentType.values()));
@@ -133,8 +146,10 @@ public class AppointmentView {
         calendar.setTime(this.appointment.getTimestamp());
 
         Patient patient = Patient.load(appointment.getPatientID());
-        fieldPatientId.setText(Long.toString(patient.getId()));
-        fieldPatientName.setText(patient.getName());
+        if (!viewMode) {
+            fieldPatientId.setText(Long.toString(patient.getId()));
+            fieldPatientName.setText(patient.getName());
+        }
         comboReason.setValue(appointment.getReason());
 
         LocalDate localDate = LocalDate.of(
@@ -155,5 +170,13 @@ public class AppointmentView {
         oldRoot = ((ScrollPane) scene.getRoot()).getContent();
         this.scene = scene;
         ((ScrollPane) this.scene.getRoot()).setContent(root);
+    }
+
+    public void setViewMode(boolean viewMode) {
+        this.viewMode = viewMode;
+    }
+
+    public boolean getViewMode() {
+        return  viewMode;
     }
 }

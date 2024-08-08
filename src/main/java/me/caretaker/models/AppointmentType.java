@@ -11,13 +11,13 @@ public enum AppointmentType {
         // Customize the display name if needed
         switch (this) {
             case CONSULTATION:
-                return "Consultation";
+                return "CONSULTATION";
             case FOLLOW_UP:
-                return "Follow-up";
+                return "FOLLOW_UP";
             case EMERGENCY:
-                return "Emergency";
+                return "EMERGENCY";
             case OTHER:
-                return "Other";
+                return "OTHER";
             default:
                 throw new IllegalArgumentException();
         }

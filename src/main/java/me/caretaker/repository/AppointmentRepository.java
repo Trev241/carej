@@ -83,7 +83,7 @@ public class AppointmentRepository {
                 while (resultSet.next()) {
                     Appointment appointment = new Appointment();
                     appointment.setPatientID(resultSet.getLong("patient_id"));
-                    appointment.setReason(AppointmentType.valueOf(resultSet.getString("reason")));
+                    appointment.setReason(AppointmentType.valueOf(resultSet.getString("reason").toUpperCase()));
                     appointment.setTimestamp(resultSet.getTimestamp("appointment_timestamp")); // Updated method name
                     appointments.add(appointment);
                 }

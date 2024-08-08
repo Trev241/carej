@@ -14,6 +14,7 @@ import me.caretaker.models.Patient;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 public class PatientView {
     private final VBox root;
@@ -34,6 +35,10 @@ public class PatientView {
     private final TextField fieldPostalCode;
     private final TextArea areaHistory;
 
+    private VBox boxAppointments;
+
+    private List<Appointment> appointments;
+
     public PatientView() {
         root = new VBox();
         HBox boxActions = new HBox();
@@ -44,6 +49,8 @@ public class PatientView {
         Button buttonSave = new Button("Save");
         Button buttonBack = new Button("Cancel");
         buttonBook = new Button("Schedule Appointment");
+
+        boxAppointments = new VBox();
 
         boxActions.getChildren().add(boxActionsLeft);
         boxActions.getChildren().add(boxActionsRight);
@@ -67,6 +74,7 @@ public class PatientView {
         root.getChildren().add(labelHeader);
         root.getChildren().add(gridDetails);
         root.getChildren().add(boxActions);
+        root.getChildren().add(boxAppointments);
 
         root.setMaxHeight(Double.MAX_VALUE);
         for (Node node : root.getChildren())
@@ -209,6 +217,20 @@ public class PatientView {
 
         pickerDob.setValue(patient.getDobAsLocalDate() != null ? patient.getDobAsLocalDate() : null);
         areaHistory.setText(patient.getMedicalHistory());
+
+        // Display all appointments
+        appointments = Appointment.loadAll();
+        boxAppointments.getChildren().clear();
+        for (Appointment appointment : appointments) {
+            AppointmentView appointmentView = new AppointmentView(true);
+            try {
+                appointmentView.update(appointment);
+            } catch (IOException | SQLException e) {
+                throw new RuntimeException();
+            }
+
+            boxAppointments.getChildren().add(appointmentView.getRoot());
+        }
     }
 
     public void show(Scene scene) {
