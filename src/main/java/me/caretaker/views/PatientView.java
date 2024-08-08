@@ -222,6 +222,8 @@ public class PatientView {
         appointments = Appointment.loadAll();
         boxAppointments.getChildren().clear();
         for (Appointment appointment : appointments) {
+            if (appointment.getPatientID() != patient.getId()) continue;
+            
             AppointmentView appointmentView = new AppointmentView(true);
             try {
                 appointmentView.update(appointment);
